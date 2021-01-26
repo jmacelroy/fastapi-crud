@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Body
 from fastapi.encoders import jsonable_encoder
+from typing import List
 
 from app.model import RecipeSchema, UpdateRecipeSchema
 
@@ -69,6 +70,15 @@ def update_recipe(id: int, recipe_data: UpdateRecipeSchema)  -> dict:
 
     return {
         "message": "Recipe updated successfully."
+    }
+
+@app.post("/recipes", tags=["Recipe"])
+def add_bulk_recipe(bulk_recipe: List[RecipeSchema] = Body(...)) -> dict:
+    for recipe in bulk_recipe:
+        recipe.id = len(recipes) + 1
+        recipes.append(recipe.dict())
+    return {            
+        "message": "Recipes added successfully"    
     }
 
 @app.delete("/recipe/{id}", tags=["Recipe"])
